@@ -1,62 +1,75 @@
-GENERATION_PATTERN = """Generation {turn}:
-{height} {width}
+import os
+
+TEMPLATE_OUT = """Generation {num}
+{high} {width}
 {grid}"""
 
 
 class Life:
+    grid = None
+    gen_num = None
+    high = None
+    width = None
 
-    def __init__(self, file="life_start.txt"):
-        with open(file) as fd:
-            self.turn = int(fd.readline().strip(":\n").split(" ")[1])
-            self.height, self.width = map(int, fd.readline().strip().split())
+    def __init__(self, file_name="life_start"):
+        this_file_path = os.path.abspath(__file__)
+        current_dir = os.path.dirname(this_file_path)
+        os.chdir(current_dir)
+
+        with open(file_name) as fd:
+            self.gen_num = int(fd.readline().split()[1][:-1])
+            self.high, self.width = map(int, fd.readline().split())
             self.grid = []
-            for _ in range(self.height):
-                row = []
-                for ch in fd.readline().strip():
-                    x = 0 if ch == "." else 1
-                    row.append(x)
-                self.grid.append(row)
+            for str_row in fd.readlines():
+                self.grid.append([x for x in str_row.strip()])
 
-    def check_neighbor(self, coordinates):
-        x, y = coordinates
-        return (0 <= x < self.height) and (0 <= y < self.width)
-
-    def show_generation(self):
-        visual_grid = "\n".join(
-            ["".join(("*" if x else "." for x in row)) for row in self.grid]
+    def show(self):
+        grid = "\n".join(("".join(row) for row in self.grid))
+        return TEMPLATE_OUT.format(
+            num=self.gen_num, high=self.high, width=self.width, grid=grid
         )
-        rez = GENERATION_PATTERN.format(
-            turn=self.turn, width=self.width, height=self.height, grid=visual_grid
-        )
-        return rez
 
-    def count_alive_neighbors(self, x, y):
-        delta = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
-        neighbors = ((x + dx, y + dy) for dx, dy in delta)
-        alive = 0
-        neighbors = list(filter(self.check_neighbor, neighbors))
-        for xx, yy in neighbors:
-            if self.grid[xx][yy]:
-                alive += 1
-        return alive
-
-    def next_generation(self):
-        next_grid = [[0 for __ in range(self.width)] for _ in range(self.height)]
-        for x in range(self.height):
-            for y in range(self.width):
-                cell = self.grid[x][y]
-                if cell and self.count_alive_neighbors(x, y) in (2, 3):
-                    next_grid[x][y] = 1
+    def turn(self):
+        new_grid = []
+        for y in range(self.high):
+            new_row = []
+            for x in range(self.width):
+                living_cnt = self.count_living_nearby(y, x)
+                if self.grid[y][x] == "." and living_cnt == 3:
+                    new_row.append("*")
                     continue
-                if not cell and self.count_alive_neighbors(x, y) == 3:
-                    next_grid[x][y] = 1
-        self.grid = next_grid
-        self.turn += 1
+                if self.grid[y][x] == "*" and living_cnt in {2, 3}:
+                    new_row.append("*")
+                    continue
+                if self.grid[y][x] == "." and living_cnt != 3:
+                    new_row.append(".")
+                    continue
+                if self.grid[y][x] == "*" and living_cnt < 2:
+                    new_row.append(".")
+                    continue
+                if self.grid[y][x] == "*" and living_cnt > 3:
+                    new_row.append(".")
+                    continue
+            new_grid.append(new_row)
+        self.grid = new_grid
+        self.gen_num += 1
+
+    def count_living_nearby(self, y, x):
+        delta = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
+        cnt = 0
+        for dy, dx in delta:
+            if (
+                0 <= y + dy < self.high
+                and 0 <= x + dx < self.width
+                and self.grid[y + dy][x + dx] == "*"
+            ):
+                cnt += +1
+        return cnt
 
 
 if __name__ == "__main__":
     life = Life()
-    while 1:
-        print(life.show_generation())
+    while True:
+        print(life.show())
+        life.turn()
         input()
-        life.next_generation()

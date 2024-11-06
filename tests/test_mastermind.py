@@ -1,4 +1,4 @@
-from mastermind import make_number, compare_numbers
+from mastermind.mastermind import make_number, compare_numbers
 
 
 def test_make_number():
