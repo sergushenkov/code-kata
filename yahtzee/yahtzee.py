@@ -61,7 +61,7 @@ def calculate_score(category, roll):
         return 2*max(combo[2])
     if category == 'th' and 3 in combo:
         return 3*max(combo[3])
-    if category == 'fh' and 4 in combo:
+    if category == 'fk' and 4 in combo:
         return 4*max(combo[4])
     if category == 'ya' and 5 in combo:
         return 5*max(combo[5])

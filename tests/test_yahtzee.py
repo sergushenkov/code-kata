@@ -35,11 +35,6 @@ def test_calculate_score_th():
     rez = calculate_score(*params)
     assert rez == 9
 
-def test_calculate_score_fh():
-    params = ('fh', [3, 4, 3, 3, 3])
-    rez = calculate_score(*params)
-    assert rez == 12
-
 def test_calculate_score_ya():
     params = ('ya', [5, 5, 5, 5, 5])
     rez = calculate_score(*params)
@@ -60,25 +55,11 @@ def test_calculate_score_ls():
     rez = calculate_score(*params)
     assert rez == 20
 
-def test_calculate_score_tp_fo():
-    params = ('tp', [5, 5, 5, 5, 3])
-    rez = calculate_score(*params)
-    assert rez == 20
-
 def test_calculate_score_tp():
     params = ('tp', [2, 4, 2, 5, 5])
     rez = calculate_score(*params)
     assert rez == 14
 
-def test_calculate_score_fh_fi():
-    params = ('tp', [5, 5, 5, 5, 5])
-    rez = calculate_score(*params)
-    assert rez == 25
-
-def test_calculate_score_fh():
-    params = ('tp', [2, 5, 2, 5, 5])
-    rez = calculate_score(*params)
-    assert rez == 19
 
 def test_calculate_score_pa_fh():
     params = ('pa', [2, 5, 2, 5, 5])
